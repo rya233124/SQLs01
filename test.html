@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<title>SQL 測驗系統（完整題庫 69 題）</title>
+<style>
+body{
+  font-family:"Segoe UI","Microsoft JhengHei",sans-serif;
+  margin:0;
+  background:#0f172a;
+  color:#f1f5f9;
+  display:flex;
+  justify-content:center;
+  padding:40px 10px;
+}
+.quiz-box{
+  width:900px;
+  background:#1e293b;
+  border-radius:12px;
+  padding:35px;
+  box-shadow:0 0 25px rgba(0,0,0,0.5);
+}
+#startScreen{text-align:center;}
+#startScreen h1{
+  font-size:36px;
+  margin-bottom:12px;
+  color:#60a5fa;
+}
+#startScreen p{
+  line-height:1.7;
+}
+button{
+  font-family:inherit;
+}
+#startBtn{
+  background:#3b82f6;
+  color:white;
+  padding:15px 40px;
+  border-radius:8px;
+  border:none;
+  font-size:20px;
+  cursor:pointer;
+  transition:0.25s;
+  margin-top:20px;
+}
+#startBtn:hover{transform:scale(1.06);background:#60a5fa;}
+#timer,#progress{
+  font-size:18px;
+  background:#0c4a6e;
+  padding:10px 14px;
+  border-radius:6px;
+  margin-bottom:12px;
+  width:fit-content;
+}
+#quizScreen{margin-top:10px;}
+.question{
+  font-size:20px;
+  font-weight:bold;
+  margin:18px 0;
+  line-height:1.6;
+}
+.choices label{
+  display:block;
+  padding:12px 14px;
+  background:#334155;
+  margin-bottom:10px;
+  border-radius:8px;
+  cursor:pointer;
+  transition:0.22s;
+  border:2px solid transparent;
+}
+.choices label:hover{
+  background:#475569;
+  border-color:#60a5fa;
+}
+.choices input{
+  margin-right:6px;
+}
+#nextBtn,#restartBtn{
+  padding:12px 28px;
+  font-size:18px;
+  border-radius:6px;
+  border:none;
+  cursor:pointer;
+  margin-top:18px;
+  transition:0.25s;
+}
+#nextBtn{
+  background:#2563eb;
+  color:white;
+}
+#nextBtn:hover{transform:scale(1.06);background:#3b82f6;}
+#restartBtn{
+  background:#16a34a;
+  color:black;
+}
+#restartBtn:hover{transform:scale(1.06);background:#22c55e;}
+#scoreBox{
+  margin-top:15px;
+  font-size:28px;
+  font-weight:bold;
+  color:#38bdf8;
+}
+.result-list{
+  margin-top:20px;
+  background:#0f172a;
+  border-radius:10px;
+  padding:18px;
+  border-left:6px solid #3b82f6;
+  max-height:480px;
+  overflow-y:auto;
+}
+.result-list p{
+  line-height:1.6;
+  margin-bottom:14px;
+  color:#e2e8f0;
+  font-size:15px;
+}
+.correctText{color:#22c55e;}
+.wrongText{color:#f97373;}
+</style>
+</head>
+<body>
+<div class="quiz-box">
+
+  <!-- 首頁 -->
+  <div id="startScreen">
+    <h1>SQL 測驗系統</h1>
+    <p>
+      本系統支援：隨機題序、隨機選項、計時、100 分制成績、對錯清單、重新測驗。<br/>
+      題庫目前收錄：<strong>69 題</strong>（包含單選題與多選題）。<br/>
+      按下「開始測驗」後，系統才會出題並開始計時。
+    </p>
+    <button id="startBtn" onclick="startQuiz()">開始測驗</button>
+  </div>
+
+  <!-- 測驗畫面 -->
+  <div id="quizScreen">
+    <div id="timer">時間：0 秒</div>
+    <div id="progress">題目：0 / 0</div>
+    <div class="question" id="questionText"></div>
+    <div class="choices" id="choices"></div>
+    <button id="nextBtn" onclick="handleNext()">下一題</button>
+  </div>
+
+  <!-- 結果畫面 -->
+  <div id="resultScreen">
+    <div id="scoreBox"><span id="finalScore"></span></div>
+    <div class="result-list" id="detail"></div>
+    <button id="restartBtn" onclick="restartQuiz()">重新測驗</button>
+  </div>
+
+</div>
+
+<script>
+// ===== 題庫（69 題，含單選與多選） =====
+const questions = [
+  // 1
+  {
+    id: 1,
+    text: `您在某間咖啡廳工作，公司要求您設定網站來儲存購物費用。
+您需要建議公司在資料庫資料表中使用某種資料類型，以便根據收費金額執行財務函數。
+請問您應該使用哪一種資料類型？`,
+    options: [
+      "binary",
+      "bit",
+      "decimal",
+      "varchar"
+    ],
+    correct: [2]
+  },
+  // 2
+  {
+    id: 2,
+    text: `請問哪一個陳述式會建立複合鍵（Composite Key）？`,
+    options: [
+      "CREATE TABLE [Order] (OrderID INTEGER, OrderItemID INTEGER, PRIMARY KEY (OrderID, OrderItemID))",
+      "CREATE TABLE [Order] (OrderID INTEGER PRIMARY KEY, OrderItemID INTEGER PRIMARY KEY)",
+      "CREATE TABLE [Order] (OrderID INTEGER, OrderItemID INTEGER, PRIMARY KEY)",
+      "CREATE TABLE [Order] (OrderID INTEGER, OrderItemID INTEGER, PRIMARY KEY OrderID, PRIMARY KEY OrderItemID)"
+    ],
+    correct: [0]
+  },
+  // 3
+  {
+    id: 3,
+    text: `請問關聯式資料庫會使用哪一項功能來確保輸入資料行中的資料有效？`,
+    options: [
+      "屬性（Attribute）",
+      "主索引鍵（Primary Key）",
+      "條件約束（Constraint）",
+      "索引（Index）"
+    ],
+    correct: [2]
+  },
+  // 4
+  {
+    id: 4,
+    text: `對於下列每一項敘述，若［正確］為 O，［錯誤］為 X。  
+1. 您可以使用預存程序來刪除資料。  
+2. 函數必須具有傳回值。  
+3. 預存程序必須具有傳回值。  
+請問填入正確或錯誤符號順序為何？`,
+    options: [
+      "O、O、O",
+      "O、X、O",
+      "X、O、O",
+      "O、O、X"
+    ],
+    correct: [1]
+  },
+  // 5
+  {
+    id: 5,
+    text: `您有一個名為 Employee 的資料表，其中包含下列資料行：
+EmployeeID、EmployeeName。  
+請問您應該使用哪一個陳述式來傳回資料表中的資料列數目？`,
+    options: [
+      "SELECT COUNT(rows) FROM Employee",
+      "SELECT COUNT(*) FROM Employee",
+      "SELECT * FROM Employee",
+      "SELECT SUM(*) FROM Employee"
+    ],
+    correct: [1]
+  },
+  // 6
+  {
+    id: 6,
+    text: `您需要將兩個查詢的結果結合成單一結果，而且包含這兩個查詢中的所有資料列。
+請問您應該使用哪一個 SQL 陳述式？`,
+    options: [
+      "EXCEPT",
+      "JOIN",
+      "TRUNCATE",
+      "UNION"
+    ],
+    correct: [3]
+  },
+  // 7
+  {
+    id: 7,
+    text: `Orders(orderID, Country)。
+請問哪一個 SQL 陳述式會傳回：每個國家地區訂單數目少於 50 的國家以及其訂單數目？`,
+    options: [
+      "SELECT COUNT(orderID), Country FROM Orders GROUP BY Country HAVING COUNT(orderID) < 50;",
+      "SELECT COUNT(orderID), Country FROM Orders HAVING COUNT(orderID) < 50 GROUP BY Country;",
+      "SELECT Country, orderID FROM Orders GROUP BY Country WHERE COUNT(orderID) < 50;",
+      "SELECT Country, orderID FROM Orders WHERE COUNT(orderID) < 50 GROUP BY Country;"
+    ],
+    correct: [0]
+  },
+  // 8
+  {
+    id: 8,
+    text: `您刪除了 order 資料表中的資料列，orderItem 資料表中的對應資料列也被自動刪除了。
+這是下列其中一種程序的範例：`,
+    options: [
+      "串聯刪除（Cascade Delete）",
+      "骨牌法刪除（Domino Delete）",
+      "函數法刪除（Functional Delete）",
+      "瀑布法刪除（Waterfall Delete）"
+    ],
+    correct: [0]
+  },
+  // 9
+  {
+    id: 9,
+    text: `您正在撰寫一個 SELECT 陳述式找出名稱包含特定字元的所有產品。
+請問您應該在 WHERE 子句中使用哪一個關鍵字？`,
+    options: [
+      "LIKE",
+      "FETCH",
+      "BETWEEN",
+      "IN"
+    ],
+    correct: [0]
+  },
+  // 10
+  {
+    id: 10,
+    text: `Products 資料表包含 ItemNumber、ItemName、ItemDescription、Price。
+請問哪一個查詢會將商品 1 的價格提高 6%？`,
+    options: [
+      "UPDATE Products SET Price = Price * 1.06 WHERE ItemNumber = 1;",
+      "ALTER Products SET Price = Price * 1.06 WHERE ItemNumber = 1;",
+      "USE Products SET Price = Price * 1.06 WHERE ItemNumber = 1;",
+      "SET Price FROM Products = Price * 1.06 WHERE ItemNumber = 1;"
+    ],
+    correct: [0]
+  },
+  // 11
+  {
+    id: 11,
+    text: `請問哪一個 SQL 陳述式是資料操作語言（DML）陳述式？`,
+    options: [
+      "SELECT * INTO Employee FROM NewHires",
+      "INSERT INTO Employee VALUES ('Jack Smith');",
+      "ALTER TABLE Employee ADD EmployeeName VARCHAR(50);",
+      "SELECT EmployeeName FROM Employee WHERE EmployeeName = 'Jack Smith';"
+    ],
+    correct: [1]
+  },
+  // 12
+  {
+    id: 12,
+    text: `您有兩個資料表，每個資料表都有三個資料列。
+您建立了一個使用交叉聯結（CROSS JOIN）的 SQL 查詢，這個查詢不包含 WHERE 子句。
+請問這兩個資料表的笛卡兒乘積會包含多少個資料列？`,
+    options: [
+      "0",
+      "3",
+      "6",
+      "9"
+    ],
+    correct: [3]
+  },
+  // 13
+  {
+    id: 13,
+    text: `建立預存程序（Stored Procedure）的其中一個主要原因是：`,
+    options: [
+      "提升效能",
+      "將儲存空間最小化",
+      "略過區分大小寫需求",
+      "讓使用者能夠直接控制查詢邏輯"
+    ],
+    correct: [0]
+  },
+  // 14
+  {
+    id: 14,
+    text: `請問您應該使用哪一個陳述式來移除外部索引鍵（Foreign Key）？`,
+    options: [
+      "ALTER TABLE",
+      "DELETE TABLE",
+      "ALTER FOREIGN KEY",
+      "DELETE FOREIGN KEY"
+    ],
+    correct: [0]
+  },
+  // 15
+  {
+    id: 15,
+    text: `Volunteer 資料表：ID、GivenName，目前有 Tia、Susana、Joey。
+當志工資訊變更時必須更新資料表。您需要將 Tia 的名字變更為 Kimberly。
+請問您應該選擇哪一個陳述式？`,
+    options: [
+      "UPDATE Volunteer SET GivenName = 'Kimberly' WHERE GivenName = 'Tia';",
+      "UPDATE GivenName = 'Kimberly' FROM Volunteer WHERE GivenName = 'Tia';",
+      "SET GivenName = 'Kimberly' FROM Volunteer WHERE GivenName = 'Tia';",
+      "SET Volunteer WHERE GivenName = 'Tia';"
+    ],
+    correct: [0]
+  },
+  // 16
+  {
+    id: 16,
+    text: `您正在設定關聯式資料庫中某個資料表的結構。
+對於下列每一項敘述，若［正確］為 O，［錯誤］為 X。  
+1. 資料表中欄位的每個值都必須是唯一的。  
+2. 資料表中的每個資料列都必須是唯一的。  
+3. 資料表中的每個資料行名稱都必須是唯一的。  
+請問填入正確或錯誤符號順序為何？`,
+    options: [
+      "O、O、O",
+      "O、X、O",
+      "X、O、O",
+      "O、O、X"
+    ],
+    correct: [2]
+  },
+  // 17
+  {
+    id: 17,
+    text: `您有一個名為 Product 的資料表。您建立了一個檢視表，其中包含 Product 中屬於 Furniture 類別的所有產品。
+您針對 Product 資料表執行一個陳述式來刪除屬於 Furniture 類別的所有產品。
+在您執行該陳述式之後，檢視表的結果集將：`,
+    options: [
+      "被封存",
+      "被刪除（檢視表物件被移除）",
+      "清空（仍存在，但沒有任何資料列）",
+      "保持不變"
+    ],
+    correct: [2]
+  },
+  // 18
+  {
+    id: 18,
+    text: `您需要停用 User1 檢視 Customer 資料的存取權。
+請問您應該使用哪一個陳述式？`,
+    options: [
+      "REMOVE User1 FROM Customer",
+      "REVOKE User1 FROM Customer",
+      "REMOVE SELECT ON Customer FROM User1",
+      "REVOKE SELECT ON Customer FROM User1"
+    ],
+    correct: [3]
+  },
+  // 19  (原題為多選，本系統採「多選題」作答)
+  {
+    id: 19,
+    text: `您正在開發一個 SQL 陳述式以建立資料表。
+請問哪兩個 SQL 關鍵字可用於 CREATE TABLE 陳述式？（請選擇 2 個答案）`,
+    options: [
+      "ORDER BY",
+      "CONSTRAINT",
+      "PRIMARY KEY",
+      "INSERT INTO"
+    ],
+    correct: [1,2]
+  },
+  // 20  多選
+  {
+    id: 20,
+    text: `您需要將資料庫正規化為「第一正規形式（1NF）」。
+請問您必須符合哪兩項需求？（請選擇 2 個答案）`,
+    options: [
+      "排除複合索引鍵",
+      "排除重複資料列",
+      "排除外部索引鍵",
+      "排除重複群組（Repeating Groups）"
+    ],
+    correct: [1,3]
+  },
+  // 21
+  {
+    id: 21,
+    text: `有一個預存程序包含以下查詢：
+SELECT 'Greetings' + Prefix + ' ' + FirstName FROM Person;
+此預存程序會傳回所有 NULL 值。您確認 Person 資料表包含資料。
+請問這個問題的最可能原因為何？`,
+    options: [
+      "Prefix 或 FirstName 資料行具有 NULL 值。",
+      "必須在查詢中指定 NULLIF 關鍵字。",
+      "加號（+）運算子無法用來附加字元資料。",
+      "必須在 SELECT 陳述式中指定 JOIN 關鍵字。"
+    ],
+    correct: [0]
+  },
+  // 22  多選
+  {
+    id: 22,
+    text: `AddressInfo 資料表結構如下：  
+StreetAddress varchar(255)、City varchar(255)、State varchar(2)、PostalCode varchar(15)，允許 NULL。  
+您必須插入一筆記錄：'1234 Main Street', 'Dallas', 'TX', '75201'。  
+請問您可以使用哪兩個 SQL 陳述式？（請選擇 2 個答案）`,
+    options: [
+      "INSERT INTO AddressInfo VALUES ('1234 Main Street', 'Dallas', 'TX', '75201');",
+      "INSERT INTO AddressInfo ('1234 Main Street', 'Dallas', 'TX', '75201') VALUES ([StreetAddress], [City], [State], [PostalCode]);",
+      "INSERT INTO AddressInfo ([StreetAddress], [City], [State], [PostalCode]) VALUES ('1234 Main Street', 'Dallas', 'TX', '75201');",
+      "UPDATE AddressInfo SET [StreetAddress] = '1234 Main Street', [City] = 'Dallas', [State] = 'TX', [PostalCode] = '75201';"
+    ],
+    correct: [0,2]
+  },
+  // 23
+  {
+    id: 23,
+    text: `請問哪一個關鍵字會結合兩個查詢的結果，並且僅傳回兩個結果集都有出現的資料列？`,
+    options: [
+      "UNION",
+      "INTERSECT",
+      "ALL",
+      "JOIN"
+    ],
+    correct: [1]
+  },
+  // 24
+  {
+    id: 24,
+    text: `您需要使用 Employee 資料表中的所有資料填入名為 EmployeeCopy 的資料表。
+請問您應該使用哪一個陳述式？`,
+    options: [
+      "COPY * INTO EmployeeCopy SELECT * FROM Employee;",
+      "INSERT INTO EmployeeCopy SELECT * FROM Employee;",
+      "INSERT * FROM Employee INTO EmployeeCopy;",
+      "SELECT * INTO EmployeeCopy SELECT * FROM Employee;"
+    ],
+    correct: [1]
+  },
+  // 25
+  {
+    id: 25,
+    text: `函數（Function）與預存程序（Stored Procedure）之間的其中一項差異在於，函數：`,
+    options: [
+      "必須有傳回值。",
+      "無法接受參數。",
+      "無法包含交易。",
+      "必須由觸發程序呼叫。"
+    ],
+    correct: [0]
+  },
+  // 26
+  {
+    id: 26,
+    text: `您有一個名為 Customer 的資料表，需要建立一個名為 District 的新整數欄位。
+請問您應該使用哪一個陳述式？`,
+    options: [
+      "ALTER TABLE Customer ADD (INTEGER District);",
+      "ALTER TABLE Customer ADD (District INTEGER);",
+      "MODIFY TABLE Customer ADD (INTEGER District);",
+      "ALTER TABLE Customer MODIFY (District INTEGER);"
+    ],
+    correct: [1]
+  },
+  // 27
+  {
+    id: 27,
+    text: `您的資料庫包含一個名為 Customer 的資料表。您需要從 Customer 資料表中刪除 CustomerID 為 12345 的記錄。
+請問您應該使用哪一個陳述式？`,
+    options: [
+      "DELETE FROM Customer WHERE CustomerID = 12345;",
+      "DELETE CustomerID FROM Customer WHERE CustomerID = 12345;",
+      "UPDATE Customer DELETE * WHERE CustomerID = 12345;",
+      "UPDATE CustomerID FROM Customer DELETE * WHERE CustomerID = 12345;"
+    ],
+    correct: [0]
+  },
+  // 28
+  {
+    id: 28,
+    text: `LoanedBooks 資料表：  
+ID, Name, City, Books  
+其中舊金山（San Francisco）的 Harry 歸還了書籍。  
+請問哪一個陳述式可正確更新您的資料表？`,
+    options: [
+      "UPDATE LoanedBooks SET Books = 0 WHERE (Name = 'Harry' OR City = 'San Francisco');",
+      "UPDATE LoanedBooks SET Books = 0 WHERE (Name IN ('Harry','San Francisco'));",
+      "UPDATE LoanedBooks SET Books = 0 WHERE (Name = 'Harry' AND City = 'San Francisco');",
+      "INSERT INTO LoanedBooks SET Books = 0 WHERE ID = 4;"
+    ],
+    correct: [2]
+  },
+  // 29
+  {
+    id: 29,
+    text: `您的資料庫有一個 Department 資料表以及一個 Employee 資料表。
+您需要確保一位員工只能被借派到一個「現有的」部門。
+請問您應該對 Employee 資料表套用什麼？`,
+    options: [
+      "資料類型（Data Type）",
+      "外部索引鍵（Foreign Key）",
+      "索引（Index）",
+      "主索引鍵（Primary Key）",
+      "唯一條件約束（UNIQUE Constraint）"
+    ],
+    correct: [1]
+  },
+  // 30
+  {
+    id: 30,
+    text: `您有一個名為 Student 的資料表，其中包含 100 個資料列。
+部分資料列 FirstName 資料行具有 NULL 值。您執行了：
+DELETE FROM Student;
+請問結果為何？`,
+    options: [
+      "您會收到錯誤訊息。",
+      "系統將刪除資料表中的所有資料列。",
+      "系統將刪除所有資料列和資料表定義。",
+      "系統將只刪除 FirstName 資料行含有 NULL 值的資料列。"
+    ],
+    correct: [1]
+  },
+  // 31
+  {
+    id: 31,
+    text: `請問哪一個陳述式會建立索引？`,
+    options: [
+      "CREATE TABLE Employee (EmployeeID INTEGER PRIMARY KEY);",
+      "CREATE TABLE Employee (EmployeeID INTEGER INDEX);",
+      "CREATE TABLE Employee (EmployeeID INTEGER NULL);",
+      "CREATE TABLE Employee (EmployeeID INTEGER DISTINCT);"
+    ],
+    correct: [0]
+  },
+  // 32
+  {
+    id: 32,
+    text: `一位開發人員嘗試使用下列查詢，在 Person 資料表中新增一個名為 Prefix 的資料行：
+ALTER TABLE Person ADD Prefix varchar(4) NOT NULL;
+執行後收到錯誤訊息。請問這個問題的可能原因為何？`,
+    options: [
+      "應該使用 DEFAULT 關鍵字來指定預設值。",
+      "varchar(4) 資料類型不適用於 Person 資料表。",
+      "應該先執行 DROP CONSTRAINT，再執行 ALTER TABLE。",
+      "Person 資料表是空的。"
+    ],
+    correct: [0]
+  },
+  // 33
+  {
+    id: 33,
+    text: `Road 資料表定義：  
+CREATE TABLE Road (RoadID INTEGER NOT NULL, Distance INTEGER NOT NULL);  
+目前資料： (1234,22)、(1384,34)。  
+您執行：INSERT INTO Road VALUES (1234,36);  
+假設尚未定義任何主鍵或唯一約束，請問結果為何？`,
+    options: [
+      "語法錯誤。",
+      "資料表中的新資料列會被新增。",
+      "發生錯誤，指出不允許 NULL 值。",
+      "發生錯誤，指出不允許重複的 ID。"
+    ],
+    correct: [1]
+  },
+  // 34
+  {
+    id: 34,
+    text: `請問哪一個陳述式會從資料表中移除所有資料列，但不記錄個別資料列刪除動作？`,
+    options: [
+      "ALTER TABLE",
+      "DROP TABLE",
+      "TRUNCATE TABLE",
+      "CREATE TABLE"
+    ],
+    correct: [2]
+  },
+  // 35
+  {
+    id: 35,
+    text: `請問哪一個查詢會傳回「除了加州（CA）以外」，其他所有在 2017-01-01 之後提交之訂單的結果集？`,
+    options: [
+      "SELECT * FROM orders WHERE order_date > '2017-01-01' AND ship_state LIKE 'CA';",
+      "SELECT * FROM orders WHERE order_date > '2017-01-01' AND ship_state <> 'CA';",
+      "SELECT * FROM orders WHERE order_date > '2017-01-01' OR ship_state <> 'CA';",
+      "SELECT * FROM orders WHERE order_date > '2017-01-01' OR ship_state LIKE 'CA';"
+    ],
+    correct: [1]
+  },
+  // 36
+  {
+    id: 36,
+    text: `您有一個資料表包含以下資料：
+ProductID / ProductCategory  
+32 books  
+25 books  
+67 movies  
+89 movies  
+請問哪一個資料庫詞彙是用來描述 ProductID 與 ProductCategory 之間的關聯性？`,
+    options: [
+      "世代（Generation）",
+      "複合（Composite）",
+      "決定性（Deterministic）",
+      "功能相依（Functional Dependency）",
+      "關聯相依（Relational Dependency）"
+    ],
+    correct: [3]
+  },
+  // 37
+  {
+    id: 37,
+    text: `您正在建立一個名為 Student 的資料庫物件，儲存以下資料：
+ID, Name, Age。  
+請問您應該使用哪一個語法來建立此物件？`,
+    options: [
+      "CREATE TABLE Student (ID INT, Name VARCHAR(100), Age INT);",
+      "CREATE Student (ID INT, Name VARCHAR(100), Age INT);",
+      "CREATE (TABLE Student ID INT, Name VARCHAR(100), Age INT);",
+      "CREATE TABLE (ID INT, Name VARCHAR(100), Age INT);"
+    ],
+    correct: [0]
+  },
+  // 38
+  {
+    id: 38,
+    text: `您建立了一個名為 Games 的資料表，其中包含最近發行之電玩遊戲的評論分數。
+您需要建立一個檢視表來傳回按照字母順序排列的遊戲名稱清單（Name 代表遊戲名稱）。
+請問您應該使用哪一個查詢？`,
+    options: [
+      "CREATE VIEW MyGames AS SELECT Name FROM Games;",
+      "CREATE VIEW MyGames AS SELECT * FROM Games;",
+      "CREATE VIEW MyGames AS SELECT Name FROM Games ORDER BY Name;",
+      "CREATE VIEW MyGames AS SELECT * FROM Games WHERE Name BETWEEN 'A' AND 'Z';"
+    ],
+    correct: [2]
+  },
+  // 39
+  {
+    id: 39,
+    text: `您有兩個資料表，分別名為 SalesPerson 與 Sales，並透過 SalesPersonID 建立關聯。
+您需要確保 Sales 資料表中的每筆記錄都在 SalesPerson 資料表中有有效的銷售人員記錄。
+請問您應該將哪一個資料庫物件新增至 Sales 資料表？`,
+    options: [
+      "叢集索引（Clustered Index）",
+      "外部索引鍵（Foreign Key）",
+      "主索引鍵（Primary Key）",
+      "非叢集索引（Nonclustered Index）"
+    ],
+    correct: [1]
+  },
+  // 40
+  {
+    id: 40,
+    text: `Flight 資料表包含：ID, FlightNumber, OriginAirport, DestinationAirport, DepartureTime, ArrivalTime。
+您需要顯示「今天稍晚抵達 LGA 的所有航班編號」，並依最新抵達時間排序。  
+程式碼：  
+SELECT FlightNumber FROM Flight  
+WHERE DestinationAirport = 'LGA' ____1____  
+ArrivalTime ____2____ GETDATE()  
+____3____ ____4____  
+請將下列程式碼片段填入：  
+1: (A) OR (B) AND  
+2: (A) < (B) > (C) =  
+3: (A) GROUP BY (B) ORDER BY  
+4: (A) ArrivalTime ASC (B) ArrivalTime DESC  
+請問正確順序為何？`,
+    options: [
+      "B、B、B、B",
+      "A、A、A、A",
+      "A、A、B、B",
+      "B、B、A、A"
+    ],
+    correct: [0]
+  },
+  // 41
+  {
+    id: 41,
+    text: `students 資料表：  
+需求：  
+A. 顯示在 2020-06-01 當天或之後註冊的所有學生。  
+B. 顯示在 2020 年畢業的所有學生。  
+C. 按照註冊順序傳回結果集，最新註冊日期在最前面。  
+欄位：enrollment_date（註冊日期）、graduation_date（畢業日期）、academic_status='Graduated' 代表已畢業。  
+請問您應該使用哪一個查詢？`,
+    options: [
+      "SELECT * FROM students WHERE enrollment_date >= '2020-06-01' OR academic_status = 'Graduated' OR graduation_date >= '2020-01-01' ORDER BY enrollment_date DESC;",
+      "SELECT * FROM students WHERE enrollment_date >= '2020-06-01' AND academic_status = 'Graduated' AND graduation_date >= '2020-01-01' ORDER BY enrollment_date ASC;",
+      "SELECT * FROM students WHERE enrollment_date >= '2020-06-01' OR academic_status = 'Graduated' AND graduation_date >= '2020-01-01' ORDER BY enrollment_date DESC;",
+      "SELECT * FROM students WHERE enrollment_date >= '2020-06-01' AND academic_status = 'Graduated' OR graduation_date >= '2020-01-01' ORDER BY enrollment_date;"
+    ],
+    correct: [2]
+  },
+  // 42
+  {
+    id: 42,
+    text: `Customer 資料表包含 CustomerID（主鍵）、FirstName、DateJoined。
+執行：SELECT CustomerID, FirstName, DateJoined FROM Customer;
+請問結果集會以哪種方式組織資料列？`,
+    options: [
+      "按照無法預測的順序（未指定排序）。",
+      "按照 FirstName 的字母序。",
+      "按照 DateJoined 的時間序。",
+      "按照插入資料列的順序（固定）。"
+    ],
+    correct: [0]
+  },
+  // 43
+  {
+    id: 43,
+    text: `您執行下列查詢：
+SELECT EmployeeID, FirstName, DepartmentName
+FROM Employee, Department;
+這種作業稱為：`,
+    options: [
+      "笛卡兒乘積（Cartesian Product）",
+      "等聯結（Equijoin）",
+      "交集（Intersection）",
+      "外部聯結（Outer Join）"
+    ],
+    correct: [0]
+  },
+  // 44
+  {
+    id: 44,
+    text: `Product 資料表有一百萬筆資料。  
+您需要使用下列查詢搜尋產品資訊：  
+SELECT ProductName, Price FROM Product WHERE Category = 'Science Books';  
+請問以下何者能讓這種搜尋更有效率？`,
+    options: [
+      "在 Category 資料行建立非叢集索引（Nonclustered Index）。",
+      "在 Price 資料行建立非叢集索引。",
+      "在 ProductName 資料行建立叢集索引（Clustered Index）。",
+      "在 Price 資料行建立叢集索引。"
+    ],
+    correct: [0]
+  },
+  // 45
+  {
+    id: 45,
+    text: `下列名為「寵物比賽獲勝者」的資料表包含欄位：
+ID, Event, Year, PetID, Birthdate, City。  
+請問哪一個資料行會阻止資料表成為第三正規形式（3NF）？`,
+    options: [
+      "ID",
+      "Year",
+      "Birthdate",
+      "PetID"
+    ],
+    correct: [2]
+  },
+  // 46
+  {
+    id: 46,
+    text: `請問哪一個陳述式會刪除未輸入員工電話號碼的資料列？`,
+    options: [
+      "DELETE FROM Employee WHERE Phone IS NULL;",
+      "DELETE FROM Employee WHERE Phone = NULLABLE;",
+      "DELETE FROM Employee WHERE Phone = NULL;",
+      "DELETE FROM Employee WHERE Phone IS NOT NULL;"
+    ],
+    correct: [0]
+  },
+  // 47
+  {
+    id: 47,
+    text: `您需要從資料庫中移除名為 EmployeeView 的檢視表。
+請問您應該使用哪一個陳述式？`,
+    options: [
+      "DELETE EmployeeView;",
+      "DELETE VIEW EmployeeView;",
+      "DROP EmployeeView;",
+      "DROP VIEW EmployeeView;"
+    ],
+    correct: [3]
+  },
+  // 48
+  {
+    id: 48,
+    text: `Product 資料表包含 ProductDescription 與 ProductCategory 欄位。
+您需要將所有「湯匙（spoon）」的 ProductCategory 值變更為 43。
+如果 ProductDescription = 'spoon' 則表示該項目為湯匙。
+請問您應該使用哪一個陳述式？`,
+    options: [
+      "SET Product TO ProductCategory = 43 WHERE ProductDescription = 'spoon';",
+      "UPDATE Product SET ProductCategory = 43 WHERE ProductDescription = 'spoon';",
+      "SET Product WHERE ProductDescription = 'spoon' TO ProductCategory = 43;",
+      "UPDATE Product WHERE ProductDescription = 'spoon' SET ProductCategory = 43;"
+    ],
+    correct: [1]
+  },
+  // 49
+  {
+    id: 49,
+    text: `您執行了一個交易，欲從資料表中刪除 100 個資料列。
+僅刪除 40 個資料列後交易失敗並回滾。請問資料庫的結果為何？`,
+    options: [
+      "資料表將損壞。",
+      "交易將自動重新啟動。",
+      "系統不會從資料表中刪除任何資料列。",
+      "系統將只刪除 40 個資料列。"
+    ],
+    correct: [2]
+  },
+  // 50
+  {
+    id: 50,
+    text: `Customers 資料表：ID, FirstName, LastName, PhoneNumber, Extension。  
+您要建立查詢以傳回：LastName、PhoneNumber、Extension，且 Extension 為有效號碼（非 NULL）。
+結果集應依 LastName 排序。  
+程式碼：  
+SELECT LastName, PhoneNumber, Extension  
+FROM Customers  
+WHERE ____1____ ____2____  
+____3____ LastName;  
+1: (A) PhoneNumber (B) NOT NULL (C) IS NOT NULL (D) Extension (E) <> NULL  
+2: 同上  
+3: (A) GROUP BY (B) HAVING (C) ORDER BY (D) SORT BY  
+請問正確順序為何？`,
+    options: [
+      "A、B、D",
+      "D、C、C",
+      "D、C、D",
+      "A、C、D"
+    ],
+    correct: [1]   // D、C、C：Extension IS NOT NULL ORDER BY LastName
+  },
+  // 51
+  {
+    id: 51,
+    text: `您是某大學的資料庫管理員。students 資料表具有 courseID 外部索引鍵，連結到 courses 資料表主鍵。
+您需要依 courseID 配對這兩個資料表，傳回學生姓名與課程名稱。
+已寫的查詢為：  
+SELECT students.name, courses.name FROM students  
+OUTER JOIN courses WHERE students.courseID = courses.courseID;  
+此查詢會產生錯誤。請問正確寫法為何？`,
+    options: [
+      "SELECT students.name, courses.name FROM students INNER JOIN ON courses WHERE students.courseID = courses.courseID;",
+      "SELECT students.name, courses.name FROM students INNER JOIN courses ON students.courseID = courses.courseID;",
+      "SELECT students.name, courses.name FROM students INNER JOIN ON students.courseID = courses.courseID;",
+      "SELECT students.name, courses.name FROM students INNER JOIN courses WHERE students.courseID == courses.courseID;"
+    ],
+    correct: [1]
+  },
+  // 52
+  {
+    id: 52,
+    text: `Cars 資料表如下：  
+Type / Color / Origin  
+Sedan Red Japan  
+Truck Red USA  
+Minivan Silver Japan  
+Hatchback Red Japan  
+Compact Black Japan  
+SUV Silver Germany  
+Convertible Black USA  
+Hybrid Black Germany  
+執行：SELECT * FROM Cars c WHERE c.Origin <> 'USA' AND c.Color <> 'Black';  
+請問此查詢會傳回多少個資料列？`,
+    options: [
+      "4",
+      "5",
+      "6",
+      "7"
+    ],
+    correct: [0]
+  },
+  // 53
+  {
+    id: 53,
+    text: `PlayerStat 資料表欄位：PlayerID、TeamID、GameDate、Points。  
+您需要針對 TeamID = 1 的隊伍顯示每位隊員的總得分。  
+程式碼：  
+SELECT PlayerID, ____1____  
+FROM PlayerStat  
+____2____ TeamID = 1  
+____3____ ____4____  
+程式碼片段：  
+A. PlayerID    B. COUNT    C. GROUP BY  
+D. TeamID     E. WHERE    F. SUM(Points)  
+G. HAVING  
+請問填入的程式碼片段順序為何？`,
+    options: [
+      "F、C、D、B",
+      "D、C、E、F",
+      "F、E、C、A",
+      "B、E、F、D"
+    ],
+    correct: [2]
+  },
+  // 54
+  {
+    id: 54,
+    text: `Building 資料表欄位：BuildingID, Address, InspectorID, InspectionDate。  
+InspectionDate 的 NULL 代表尚未檢查。  
+您需要顯示最早完成檢查的 10 棟大樓地址。程式碼：  
+SELECT ________ Address  
+FROM Building  
+WHERE InspectionDate _______  
+_______ InspectionDate  
+程式碼片段：  
+A. COUNT   B. IS NOT NULL   C. ORDER BY  
+D. HAVING  E. GROUP BY      F. IS NULL  
+G. TOP 10  
+請問填入的程式碼片段順序為何？`,
+    options: [
+      "A、C、F",
+      "A、D、E",
+      "B、D、E",
+      "G、B、E"
+    ],
+    correct: [3]   // 依原試題標準答案
+  },
+  // 55
+  {
+    id: 55,
+    text: `Product 資料表包含欄位：ProductID（主索引鍵）、ProductName、CategoryID（外鍵，指向 Category）。  
+目前已有 ProductID = 3296。您執行：  
+INSERT INTO Product VALUES (3296, 'Table', 4444);  
+請問結果為何？`,
+    options: [
+      "語法錯誤。",
+      "Product 資料表中的新資料列。",
+      "外部索引鍵條件約束違規。",
+      "主索引鍵條件約束違規。"
+    ],
+    correct: [3]
+  },
+  // 56
+  {
+    id: 56,
+    text: `您撰寫了一系列執行冗長複雜查詢的 SQL 陳述式，並透過電子郵件傳送結果。
+您希望能夠在需要時隨時手動呼叫這段程式碼。
+請問您可以使用哪一個資料庫物件來儲存程式碼？`,
+    options: [
+      "預存程序（Stored Procedure）",
+      "函數（Function）",
+      "檢視表（View）",
+      "觸發程序（Trigger）"
+    ],
+    correct: [0]
+  },
+  // 57
+  {
+    id: 57,
+    text: `ItemsOnOrder 資料表欄位：ID, ItemNumber, Quantity, UnitPrice, LineItemTotal。  
+您需要建立查詢來顯示：訂單總數、平均單行商品總計、最高單行商品總計、所有訂購商品的總計。  
+LineItemTotal 代表單行商品總計。請問您應該使用哪一個查詢？`,
+    options: [
+      "SELECT COUNT(ID), AVG(LineItemTotal), MAX(LineItemTotal), SUM(LineItemTotal) FROM ItemsOnOrder;",
+      "SELECT SUM(ID), AVG(LineItemTotal), MAX(LineItemTotal), SUM(LineItemTotal) FROM ItemsOnOrder;",
+      "SELECT COUNT(ID), AVG(UnitPrice + Quantity), MAX(UnitPrice + Quantity), SUM(UnitPrice + Quantity) FROM ItemsOnOrder GROUP BY ItemNumber, LineItemTotal;",
+      "SELECT COUNT(ID), AVG(LineItemTotal), MAX(LineItemTotal), SUM(LineItemTotal) FROM ItemsOnOrder HAVING ItemNumber, Quantity, UnitPrice;"
+    ],
+    correct: [0]
+  },
+  // 58
+  {
+    id: 58,
+    text: `您需要刪除某個資料庫資料表。
+請問您應該使用哪一個資料定義語言（DDL）關鍵字？`,
+    options: [
+      "ALTER",
+      "TRUNCATE",
+      "DROP",
+      "DELETE"
+    ],
+    correct: [2]
+  },
+  // 59
+  {
+    id: 59,
+    text: `您有 customer 資料表與 order 資料表，每個都包含 CustomerID。
+您使用這個欄位來聯結兩個資料表，並執行查詢以傳回：  
+* 所有客戶及其訂單  
+* 沒有任何訂單的客戶  
+請問這代表哪一種聯結？`,
+    options: [
+      "完全聯結",
+      "內部聯結（Inner Join）",
+      "完全外部聯結（Full Outer Join）",
+      "部分聯結"
+    ],
+    correct: [2]
+  },
+  // 60
+  {
+    id: 60,
+    text: `Customers 資料表有一個 SSN 欄位儲存社會安全號碼。
+新的法規禁止儲存這些資訊。執行：
+ALTER TABLE Customers REMOVE SSN;
+會導致錯誤。  
+請問您需要改成哪一個查詢，才能從 Customers 資料表中移除 SSN 欄位？`,
+    options: [
+      "ALTER TABLE Customers DROP COLUMN SSN;",
+      "ALTER TABLE Customers DELETE COLUMN;",
+      "ALTER TABLE Customers DROP SSN;",
+      "ALTER TABLE Customers DELETE SSN;"
+    ],
+    correct: [0]
+  },
+  // 61
+  {
+    id: 61,
+    text: `請問哪一個查詢會正確傳回 ship_state 不含德州 (TX) 和亞利桑那州 (AZ) 的所有訂單結果集？`,
+    options: [
+      "SELECT * FROM Orders WHERE NOT ship_state = 'TY' OR NOT ship_state = 'AZ';",
+      "SELECT * FROM Orders WHERE NOT ship_state = 'TX' AND NOT ship_state = 'AZ';",
+      "SELECT * FROM Orders WHERE ship_state NOT = 'TX' OR ship_state NOT = 'AZ';",
+      "SELECT * FROM Orders WHERE ship_state NOT = 'TX' AND ship_state NOT = 'AZ';"
+    ],
+    correct: [1]
+  },
+  // 62
+  {
+    id: 62,
+    text: `Products 資料表包含 ItemDescription 欄位。
+請問哪一個查詢會在 ItemDescription 出現 'chocolate' 字串時擷取 ItemName 與 Price？`,
+    options: [
+      "SELECT ItemName, Price FROM Products WHERE ItemDescription LIKE '%chocolate%';",
+      "SELECT ItemName, Price FROM Products WHERE ItemDescription LIKE 'chocolate';",
+      "SELECT ItemName, Price FROM Products WHERE ItemDescription IN '%chocolate%';",
+      "SELECT ItemName, Price FROM Products WHERE ItemDescription = 'chocolate';"
+    ],
+    correct: [0]
+  },
+  // 63
+  {
+    id: 63,
+    text: `您正在設定關聯式資料庫中某個資料表的結構。
+該資料表有一個叢集索引（Clustered Index）。請分別選取正確選項完成敘述：  
+1. 適合用來 ______  
+(A) 傳回大型結果集    (B) 傳回許多資料行    (C) 不用 ORDER BY 或 GROUP BY 子句  
+2. 存取模式為 ______  
+(A) 隨機存取          (B) 循序存取          (C) 並非唯一或包含許多共同的值  
+請問正確組合為何？`,
+    options: [
+      "1.A；2.A",
+      "1.A；2.B",
+      "1.A；2.C",
+      "1.B；2.A",
+      "1.B；2.B",
+      "1.B；2.C",
+      "1.C；2.B",
+      "1.C；2.C"
+    ],
+    correct: [1]
+  },
+  // 64
+  {
+    id: 64,
+    text: `Cars 與 Colors 兩個資料表透過 ColorID 建立關聯。  
+Cars：
+(Sedan, 2-door, 2)、(Truck, 4-door, NULL)、(Minivan, 3-door, 1)  
+Colors：
+(Red,1)、(Gold,2)  
+執行：  
+SELECT * FROM Cars  
+LEFT OUTER JOIN Colors ON Cars.ColorID = Colors.ColorID;  
+請問此 SQL 陳述式會傳回多少個資料列？`,
+    options: [
+      "0",
+      "2",
+      "3",
+      "6"
+    ],
+    correct: [2]
+  },
+  // 65  多選
+  {
+    id: 65,
+    text: `Chapter 與 Language 兩個資料表如下：  
+Chapter：ChapterId, City, Region, Country  
+Language：LanguageId, LanguageName, Locale  
+您建立了第三個資料表 ChapterLanguage 來關聯兩者，並需要以複合主索引鍵（Composite Primary Key）標識每一筆紀錄。
+請問應該從兩個資料表中選取哪兩個欄位作為複合主索引鍵？（請選擇 2 個答案）`,
+    options: [
+      "ChapterId",
+      "City",
+      "Region",
+      "Country",
+      "LanguageId",
+      "LanguageName"
+    ],
+    correct: [0,4]
+  },
+  // 66
+  {
+    id: 66,
+    text: `您需要利用下面的程式碼設定資料庫檢視表 NorthAmericaMammals_View：  
+_______________1________________  
+_______________2________________  
+_______________3________________  
+WHERE a.Class = 'Mammals' AND a.InNorthAmerica = 1  
+請將下列程式碼片段排列到正確位置：  
+A. CREATE VIEW [dbo].[NorthAmericaMammals_View]  
+B. INSERT VIEW [dbo].[NorthAmericaMammals_View]  
+C. AS JOIN a.Id, a.Name  
+D. AS SELECT a.Id, a.Name  
+E. FROM Animal a  
+F. JOIN Animals a  
+請問填入的程式碼片段順序為何？`,
+    options: [
+      "A、C、F",
+      "A、D、E",
+      "B、D、E",
+      "B、C、F"
+    ],
+    correct: [1]
+  },
+  // 67
+  {
+    id: 67,
+    text: `有一個資料表儲存學校出勤率資訊：  
+StudentName, GradeLevel, DaysAbsent  
+需求：  
+* StudentName 必須是字元字串。  
+* GradeLevel 必須是整數。  
+* DaysAbsent 可以在小數點後面包含一位數字。  
+可用資料型別：  
+(A) BIT   (B) DECIMAL   (C) VARCHAR  
+(D) DATETIME   (E) INT   (F) CHAR  
+請問 StudentName、GradeLevel、DaysAbsent 的資料型別為何？`,
+    options: [
+      "C、E、B",
+      "C、B、E",
+      "F、E、B",
+      "A、B、B"
+    ],
+    correct: [0]
+  },
+  // 68
+  {
+    id: 68,
+    text: `您建立了下列查詢來判斷 'Sample Movie' 是否只在 Movie 資料表中出現一次：  
+SELECT Title  
+FROM Movie  
+WHERE Title = 'Sample Movie'  
+ORDER BY Title  
+GROUP BY Title  
+HAVING COUNT(*) = 1;  
+執行後傳回語法錯誤。您需要修改查詢以正常執行並傳回正確結果。
+請問應採取下列哪一項做法？`,
+    options: [
+      "移除 ORDER BY 子句。",
+      "移除 GROUP BY 子句。",
+      "將 HAVING 子句改為 HAVING COUNT(1) = 1。",
+      "將 HAVING 子句改為 HAVING COUNT(Title) = 1。"
+    ],
+    correct: [0]
+  },
+  // 69
+  {
+    id: 69,
+    text: `對於下列每一項敘述，若［正確］為 O，［錯誤］為 X。  
+1. 完整資料庫備份就是整個資料庫中所有資料的複本。  
+2. 交易紀錄備份會備份資料庫中的所有資料。  
+3. 差異備份只會複製上次完整備份之前變更的資料。  
+4. 檔案或檔案群組還原會指定要復原的資料庫部分。  
+請問填入正確或錯誤符號順序為何？`,
+    options: [
+      "O、O、O、O",
+      "O、X、X、O",
+      "X、O、O、X",
+      "O、O、X、O"
+    ],
+    correct: [1]
+  }
+];
+
+// ===== 狀態變數 =====
+let shuffledQuestions = [];
+let currentIndex = 0;
+let score = 0;              // 題數計分，最後轉成 100 分
+let startTime = 0;
+let timerInterval = null;
+let userAnswers = [];       // {question, selected, isCorrect}
+
+// 初始：隱藏測驗＆結果區、計時器
+window.onload = () => {
+  document.getElementById("quizScreen").style.display = "none";
+  document.getElementById("resultScreen").style.display = "none";
+  document.getElementById("timer").style.display = "none";
+  document.getElementById("progress").style.display = "none";
+};
+
+// 開始測驗
+function startQuiz(){
+  shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+  currentIndex = 0;
+  score = 0;
+  userAnswers = [];
+
+  document.getElementById("startScreen").style.display = "none";
+  document.getElementById("quizScreen").style.display = "block";
+  document.getElementById("resultScreen").style.display = "none";
+
+  document.getElementById("timer").style.display = "inline-block";
+  document.getElementById("progress").style.display = "inline-block";
+
+  startTime = Date.now();
+  if(timerInterval){ clearInterval(timerInterval); }
+  timerInterval = setInterval(updateTimer, 1000);
+
+  showQuestion();
+}
+
+function updateTimer(){
+  const sec = Math.floor((Date.now() - startTime) / 1000);
+  document.getElementById("timer").textContent = `時間：${sec} 秒`;
+}
+
+// 顯示目前題目
+function showQuestion(){
+  const q = shuffledQuestions[currentIndex];
+  const total = shuffledQuestions.length;
+
+  document.getElementById("progress").textContent =
+    `題目：${currentIndex + 1} / ${total}`;
+
+  const qText = document.getElementById("questionText");
+  qText.textContent = q.text;
+
+  const choicesDiv = document.getElementById("choices");
+  choicesDiv.innerHTML = "";
+
+  const optionOrder = q.options.map((_, i) => i).sort(() => Math.random() - 0.5);
+  const isMulti = q.correct.length > 1;
+
+  optionOrder.forEach(idx => {
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    input.type = isMulti ? "checkbox" : "radio";
+    input.name = "choice";
+    input.value = idx.toString();
+
+    label.appendChild(input);
+    const span = document.createElement("span");
+    span.textContent = " " + q.options[idx];
+    label.appendChild(span);
+
+    choicesDiv.appendChild(label);
+  });
+
+  document.getElementById("nextBtn").textContent =
+    (currentIndex === total - 1) ? "交卷" : "下一題";
+}
+
+// 點擊下一題 / 交卷
+function handleNext(){
+  const q = shuffledQuestions[currentIndex];
+  const choiceInputs = document.querySelectorAll("#choices input");
+  const selected = [];
+
+  choiceInputs.forEach(input => {
+    if(input.checked){
+      selected.push(parseInt(input.value, 10));
+    }
+  });
+
+  if(selected.length === 0){
+    alert("請先選擇答案。");
+    return;
+  }
+
+  selected.sort((a,b) => a - b);
+  const correctSorted = [...q.correct].sort((a,b) => a - b);
+  const isCorrect =
+    (selected.length === correctSorted.length) &&
+    selected.every((v,i) => v === correctSorted[i]);
+
+  if(isCorrect) score++;
+
+  userAnswers.push({
+    question: q,
+    selected,
+    isCorrect
+  });
+
+  currentIndex++;
+  if(currentIndex < shuffledQuestions.length){
+    showQuestion();
+  }else{
+    endQuiz();
+  }
+}
+
+// 結束測驗
+function endQuiz(){
+  clearInterval(timerInterval);
+  const elapsedSec = Math.floor((Date.now() - startTime) / 1000);
+
+  document.getElementById("quizScreen").style.display = "none";
+  document.getElementById("resultScreen").style.display = "block";
+
+  const total = shuffledQuestions.length;
+  const percent = ((score / total) * 100).toFixed(1);
+
+  document.getElementById("finalScore").textContent =
+    `得分：${percent} 分（${score} / ${total} 題），耗時 ${elapsedSec} 秒`;
+
+  const detailDiv = document.getElementById("detail");
+  detailDiv.innerHTML = "";
+
+  userAnswers.forEach((ua, idx) => {
+    const q = ua.question;
+    const num = idx + 1;
+    const yourAnsText = ua.selected.map(i => q.options[i]).join("；");
+    const correctText = q.correct.map(i => q.options[i]).join("；");
+
+    const p = document.createElement("p");
+    p.innerHTML =
+      `第 ${num} 題：${q.text}<br>` +
+      `<span class="${ua.isCorrect ? "correctText" : "wrongText"}">你的答案：${yourAnsText}</span><br>` +
+      `<span class="correctText">正確答案：${correctText}</span>`;
+    detailDiv.appendChild(p);
+  });
+}
+
+// 重新測驗
+function restartQuiz(){
+  document.getElementById("resultScreen").style.display = "none";
+  document.getElementById("startScreen").style.display = "block";
+  document.getElementById("timer").style.display = "none";
+  document.getElementById("progress").style.display = "none";
+}
+</script>
+</body>
+</html>
