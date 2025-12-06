@@ -1209,12 +1209,12 @@ HAVING COUNT(*) = 1;
 // ===== 狀態變數 =====
 let shuffledQuestions = [];
 let currentIndex = 0;
-let score = 0;              // 題數計分，最後轉成 100 分
+let score = 0;
 let startTime = 0;
 let timerInterval = null;
-let userAnswers = [];       // {question, selected, isCorrect}
+let userAnswers = [];
 
-// 初始：隱藏測驗＆結果區、計時器
+// 初始：隱藏測驗＆結果＆計時器
 window.onload = () => {
   document.getElementById("quizScreen").style.display = "none";
   document.getElementById("resultScreen").style.display = "none";
@@ -1222,7 +1222,7 @@ window.onload = () => {
   document.getElementById("progress").style.display = "none";
 };
 
-// 開始測驗
+// ======================= 開始測驗 =======================
 function startQuiz(){
   shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
   currentIndex = 0;
@@ -1232,12 +1232,11 @@ function startQuiz(){
   document.getElementById("startScreen").style.display = "none";
   document.getElementById("quizScreen").style.display = "block";
   document.getElementById("resultScreen").style.display = "none";
-
   document.getElementById("timer").style.display = "inline-block";
   document.getElementById("progress").style.display = "inline-block";
 
   startTime = Date.now();
-  if(timerInterval){ clearInterval(timerInterval); }
+  if(timerInterval) clearInterval(timerInterval);
   timerInterval = setInterval(updateTimer, 1000);
 
   showQuestion();
@@ -1248,120 +1247,120 @@ function updateTimer(){
   document.getElementById("timer").textContent = `時間：${sec} 秒`;
 }
 
-// 顯示目前題目
+// ======================= 顯示題目 =======================
 function showQuestion(){
   const q = shuffledQuestions[currentIndex];
   const total = shuffledQuestions.length;
+  const choiceBox = document.getElementById("choices");
 
   document.getElementById("progress").textContent =
-    `題目：${currentIndex + 1} / ${total}`;
+  `題目：${currentIndex+1} / ${total}`;
 
-  const qText = document.getElementById("questionText");
-  qText.textContent = q.text;
+  document.getElementById("questionText").textContent = q.text;
+  choiceBox.innerHTML = "";
 
-  const choicesDiv = document.getElementById("choices");
-  choicesDiv.innerHTML = "";
+  // 選項打亂
+  let order = q.options.map((_,i)=>i).sort(()=>Math.random()-0.5);
+  let multi = q.correct.length>1;
 
-  const optionOrder = q.options.map((_, i) => i).sort(() => Math.random() - 0.5);
-  const isMulti = q.correct.length > 1;
-
-  optionOrder.forEach(idx => {
-    const label = document.createElement("label");
-    const input = document.createElement("input");
-    input.type = isMulti ? "checkbox" : "radio";
-    input.name = "choice";
-    input.value = idx.toString();
+  order.forEach(idx=>{
+    let label=document.createElement("label");
+    let input=document.createElement("input");
+    input.type=multi?"checkbox":"radio";
+    input.name="choice";
+    input.value=idx.toString();
 
     label.appendChild(input);
-    const span = document.createElement("span");
-    span.textContent = " " + q.options[idx];
-    label.appendChild(span);
+    label.appendChild(document.createTextNode(" "+q.options[idx]));
 
-    choicesDiv.appendChild(label);
+    // ★ 點選後立即評分與顯示正解
+    input.onclick = ()=> selectAnswer(idx,label);
+
+    choiceBox.appendChild(label);
   });
 
+  document.getElementById("nextBtn").disabled=true;
+  document.getElementById("nextBtn").style.opacity="0.4";
   document.getElementById("nextBtn").textContent =
-    (currentIndex === total - 1) ? "交卷" : "下一題";
+  (currentIndex===total-1)?"交卷":"下一題";
 }
 
-// 點擊下一題 / 交卷
-function handleNext(){
-  const q = shuffledQuestions[currentIndex];
-  const choiceInputs = document.querySelectorAll("#choices input");
-  const selected = [];
-
-  choiceInputs.forEach(input => {
-    if(input.checked){
-      selected.push(parseInt(input.value, 10));
-    }
-  });
-
-  if(selected.length === 0){
-    alert("請先選擇答案。");
-    return;
-  }
-
-  selected.sort((a,b) => a - b);
-  const correctSorted = [...q.correct].sort((a,b) => a - b);
-  const isCorrect =
-    (selected.length === correctSorted.length) &&
-    selected.every((v,i) => v === correctSorted[i]);
-
+// ======================= 點選答案立即評分 =======================
+function selectAnswer(selectIndex,label){
+  const q=shuffledQuestions[currentIndex];
+  const correctList=q.correct;
+  const isCorrect=correctList.includes(selectIndex);
   if(isCorrect) score++;
 
-  userAnswers.push({
-    question: q,
-    selected,
-    isCorrect
+  let labels=document.querySelectorAll("#choices label");
+  labels.forEach(lb=>{
+    let iv= parseInt(lb.querySelector("input").value);
+    lb.classList.add( correctList.includes(iv) ? "correct" : "" );
   });
 
-  currentIndex++;
-  if(currentIndex < shuffledQuestions.length){
-    showQuestion();
-  }else{
-    endQuiz();
-  }
+  label.classList.add(isCorrect?"correct":"wrong");
+
+  // 禁止重選
+  document.querySelectorAll("#choices input").forEach(i=>i.disabled=true);
+
+  userAnswers.push({
+    question:q,
+    selected:[selectIndex],
+    isCorrect:isCorrect
+  });
+
+  // 允許下一題
+  let btn=document.getElementById("nextBtn");
+  btn.disabled=false;
+  btn.style.opacity="1";
+  btn.onclick=()=>{
+    currentIndex++;
+    if(currentIndex<shuffledQuestions.length) showQuestion();
+    else endQuiz();
+  };
 }
 
-// 結束測驗
+// ======================= 結束測驗 =======================
 function endQuiz(){
   clearInterval(timerInterval);
-  const elapsedSec = Math.floor((Date.now() - startTime) / 1000);
+  const used=Math.floor((Date.now()-startTime)/1000);
+  const total=shuffledQuestions.length;
+  const percent=((score/total)*100).toFixed(1);
 
-  document.getElementById("quizScreen").style.display = "none";
-  document.getElementById("resultScreen").style.display = "block";
+  document.getElementById("quizScreen").style.display="none";
+  document.getElementById("resultScreen").style.display="block";
 
-  const total = shuffledQuestions.length;
-  const percent = ((score / total) * 100).toFixed(1);
+  document.getElementById("finalScore").textContent=
+  `得分：${percent} 分（${score} / ${total} 題）｜耗時 ${used} 秒`;
 
-  document.getElementById("finalScore").textContent =
-    `得分：${percent} 分（${score} / ${total} 題），耗時 ${elapsedSec} 秒`;
+  let box=document.getElementById("detail");
+  box.innerHTML="";
 
-  const detailDiv = document.getElementById("detail");
-  detailDiv.innerHTML = "";
+  userAnswers.forEach((ua,i)=>{
+    let q=ua.question;
+    let wrong=q.correct.map(i=>q.options[i]).join("；");
+    let pick=ua.selected.map(i=>q.options[i]).join("；");
 
-  userAnswers.forEach((ua, idx) => {
-    const q = ua.question;
-    const num = idx + 1;
-    const yourAnsText = ua.selected.map(i => q.options[i]).join("；");
-    const correctText = q.correct.map(i => q.options[i]).join("；");
+    let p=document.createElement("p");
+    p.innerHTML=
+    `第 ${i+1} 題：${q.text}<br>
+    <span class="${ua.isCorrect?"correctText":"wrongText"}">你的答案：${pick}</span><br>
+    <span class="correctText">正確答案：${wrong}</span>`;
 
-    const p = document.createElement("p");
-    p.innerHTML =
-      `第 ${num} 題：${q.text}<br>` +
-      `<span class="${ua.isCorrect ? "correctText" : "wrongText"}">你的答案：${yourAnsText}</span><br>` +
-      `<span class="correctText">正確答案：${correctText}</span>`;
-    detailDiv.appendChild(p);
+    box.appendChild(p);
   });
 }
 
-// 重新測驗
+// ======================= 重新開始 =======================
 function restartQuiz(){
-  document.getElementById("resultScreen").style.display = "none";
-  document.getElementById("startScreen").style.display = "block";
-  document.getElementById("timer").style.display = "none";
-  document.getElementById("progress").style.display = "none";
+  document.getElementById("resultScreen").style.display="none";
+  document.getElementById("startScreen").style.display="block";
+  document.getElementById("timer").style.display="none";
+  document.getElementById("progress").style.display="none";
 }
+
+
 </script>
 </body>
 </html>
+
