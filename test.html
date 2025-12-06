@@ -6,9 +6,8 @@
 <style>
 body{
   font-family:"Segoe UI","Microsoft JhengHei",sans-serif;
-  margin:0;
   background:#0f172a;
-  color:#f1f5f9;
+  color:#e2e8f0;
   display:flex;
   justify-content:center;
   padding:40px 10px;
@@ -21,133 +20,91 @@ body{
   box-shadow:0 0 25px rgba(0,0,0,0.5);
 }
 #startScreen{text-align:center;}
-#startScreen h1{
-  font-size:36px;
-  margin-bottom:12px;
-  color:#60a5fa;
-}
-#startScreen p{
-  line-height:1.7;
-}
-button{
-  font-family:inherit;
-}
 #startBtn{
-  background:#3b82f6;
-  color:white;
-  padding:15px 40px;
-  border-radius:8px;
-  border:none;
-  font-size:20px;
-  cursor:pointer;
-  transition:0.25s;
-  margin-top:20px;
+  background:#3b82f6; color:white;
+  padding:14px 45px;border-radius:8px;border:none;
+  font-size:20px;cursor:pointer;margin-top:18px;
 }
-#startBtn:hover{transform:scale(1.06);background:#60a5fa;}
+#startBtn:hover{background:#60a5fa;transform:scale(1.06);}
+
 #timer,#progress{
-  font-size:18px;
   background:#0c4a6e;
-  padding:10px 14px;
-  border-radius:6px;
-  margin-bottom:12px;
-  width:fit-content;
-}
-#quizScreen{margin-top:10px;}
-.question{
-  font-size:20px;
-  font-weight:bold;
-  margin:18px 0;
-  line-height:1.6;
-}
-.choices label{
-  display:block;
-  padding:12px 14px;
-  background:#334155;
-  margin-bottom:10px;
-  border-radius:8px;
-  cursor:pointer;
-  transition:0.22s;
-  border:2px solid transparent;
-}
-.choices label:hover{
-  background:#475569;
-  border-color:#60a5fa;
-}
-.choices input{
-  margin-right:6px;
-}
-#nextBtn,#restartBtn{
-  padding:12px 28px;
+  padding:8px 14px;border-radius:6px;
+  margin-bottom:10px;display:inline-block;
   font-size:18px;
-  border-radius:6px;
-  border:none;
-  cursor:pointer;
-  margin-top:18px;
-  transition:0.25s;
 }
+
+.question{font-size:20px;font-weight:bold;margin:16px 0;line-height:1.6;}
+
+.choices label{
+  display:block;background:#334155;padding:12px;margin-bottom:10px;
+  border-radius:8px;border:2px solid transparent;cursor:pointer;
+}
+.choices label:hover{background:#475569;border-color:#60a5fa;}
+
+.correct{background:#16a34a70!important;border-color:#16a34a!important;}
+.wrong{background:#dc262670!important;border-color:#dc2626!important;}
+
+button{font-family:inherit;transition:.25s;cursor:pointer;margin-top:15px;}
+
+#confirmBtn{
+  background:#fbbf24;color:#000;border:none;
+  font-size:18px;padding:12px 30px;border-radius:6px;display:none;
+}
+#confirmBtn:hover{background:#fcd34d;transform:scale(1.05);}
+
 #nextBtn{
-  background:#2563eb;
-  color:white;
+  background:#2563eb;color:white;border:none;
+  font-size:18px;padding:12px 28px;border-radius:6px;display:none;
 }
-#nextBtn:hover{transform:scale(1.06);background:#3b82f6;}
+#nextBtn:hover{background:#3b82f6;transform:scale(1.06);}
+
 #restartBtn{
-  background:#16a34a;
-  color:black;
+  background:#22c55e;color:black;border:none;
+  font-size:18px;padding:12px 28px;border-radius:6px;
 }
-#restartBtn:hover{transform:scale(1.06);background:#22c55e;}
-#scoreBox{
-  margin-top:15px;
-  font-size:28px;
-  font-weight:bold;
-  color:#38bdf8;
-}
+#restartBtn:hover{background:#4ade80;transform:scale(1.07);}
+
+#resultScreen{text-align:center;display:none;}
+#finalScore{font-size:30px;color:#38bdf8;font-weight:bold;}
+
 .result-list{
-  margin-top:20px;
-  background:#0f172a;
-  border-radius:10px;
-  padding:18px;
-  border-left:6px solid #3b82f6;
-  max-height:480px;
-  overflow-y:auto;
+  text-align:left;background:#0f172a;padding:18px;border-radius:8px;
+  margin-top:20px;border-left:6px solid #3b82f6;
+  max-height:430px;overflow-y:auto;
 }
-.result-list p{
-  line-height:1.6;
-  margin-bottom:14px;
-  color:#e2e8f0;
-  font-size:15px;
-}
+.result-list p{margin-bottom:14px;font-size:15px;}
 .correctText{color:#22c55e;}
-.wrongText{color:#f97373;}
+.wrongText{color:#f87171;}
 </style>
 </head>
 <body>
+
 <div class="quiz-box">
 
-  <!-- 首頁 -->
   <div id="startScreen">
     <h1>SQL 測驗系統</h1>
-    <p>
-      本系統支援：隨機題序、隨機選項、計時、100 分制成績、對錯清單、重新測驗。<br/>
-      題庫目前收錄：<strong>69 題</strong>（包含單選題與多選題）。<br/>
-      按下「開始測驗」後，系統才會出題並開始計時。
-    </p>
+    <p>題庫 69題｜隨機題序+隨機選項+計分+錯題回顯</p>
     <button id="startBtn" onclick="startQuiz()">開始測驗</button>
   </div>
 
-  <!-- 測驗畫面 -->
-  <div id="quizScreen">
-    <div id="timer">時間：0 秒</div>
-    <div id="progress">題目：0 / 0</div>
+  <div id="quizScreen" style="display:none;">
+    <div id="timer"></div>
+    <div id="progress"></div>
+
     <div class="question" id="questionText"></div>
     <div class="choices" id="choices"></div>
-    <button id="nextBtn" onclick="handleNext()">下一題</button>
+
+    <!-- ★★ 你之前缺少這顆 → 已補上且可使用 ★★ -->
+    <button id="confirmBtn" onclick="confirmAnswer()">確認答案</button>
+
+    <button id="nextBtn" onclick="nextQuestion()">下一題</button>
   </div>
 
-  <!-- 結果畫面 -->
   <div id="resultScreen">
-    <div id="scoreBox"><span id="finalScore"></span></div>
+    <div id="finalScore"></div>
     <div class="result-list" id="detail"></div>
-    <button id="restartBtn" onclick="restartQuiz()">重新測驗</button>
+    <button id="restartBtn" onclick="location.reload()">重新測驗</button>
   </div>
 
 </div>
@@ -1205,7 +1162,6 @@ HAVING COUNT(*) = 1;
     correct: [1]
   }
 ];
-
 // ===== 狀態變數 =====
 let shuffledQuestions = [];
 let currentIndex = 0;
@@ -1251,38 +1207,71 @@ function updateTimer(){
 function showQuestion(){
   const q = shuffledQuestions[currentIndex];
   const total = shuffledQuestions.length;
-  const choiceBox = document.getElementById("choices");
 
   document.getElementById("progress").textContent =
   `題目：${currentIndex+1} / ${total}`;
 
   document.getElementById("questionText").textContent = q.text;
-  choiceBox.innerHTML = "";
+  const choicesDiv = document.getElementById("choices");
+  choicesDiv.innerHTML = "";
 
-  // 選項打亂
-  let order = q.options.map((_,i)=>i).sort(()=>Math.random()-0.5);
+  let optionOrder = q.options.map((_,i)=>i).sort(()=>Math.random()-0.5);
   let multi = q.correct.length>1;
 
-  order.forEach(idx=>{
+  optionOrder.forEach(idx=>{
     let label=document.createElement("label");
     let input=document.createElement("input");
-    input.type=multi?"checkbox":"radio";
-    input.name="choice";
-    input.value=idx.toString();
+    input.type = multi ? "checkbox" : "radio";
+    input.name = "choice";
+    input.value = idx.toString();
 
     label.appendChild(input);
     label.appendChild(document.createTextNode(" "+q.options[idx]));
-
-    // ★ 點選後立即評分與顯示正解
-    input.onclick = ()=> selectAnswer(idx,label);
-
-    choiceBox.appendChild(label);
+    choicesDiv.appendChild(label);
   });
 
-  document.getElementById("nextBtn").disabled=true;
-  document.getElementById("nextBtn").style.opacity="0.4";
-  document.getElementById("nextBtn").textContent =
-  (currentIndex===total-1)?"交卷":"下一題";
+  // 新增：確認答案按鈕
+  document.getElementById("confirmBtn").style.display="inline-block";
+  document.getElementById("nextBtn").style.display="none";
+}
+
+
+// =================== 新增功能：按「確認答案」後才判斷 ===================
+
+function confirmAnswer(){
+  const q = shuffledQuestions[currentIndex];
+  const inputs=document.querySelectorAll("#choices input");
+  const selected=[];
+
+  inputs.forEach(i=>{ if(i.checked) selected.push(parseInt(i.value)); });
+
+  if(selected.length===0) return alert("請先選擇答案！");
+
+  const correct=q.correct;
+  const isCorrect= selected.length===correct.length
+                 && selected.every((v,i)=>correct.includes(v));
+
+  if(isCorrect) score++;
+
+  // 標示紅/綠
+  document.querySelectorAll("#choices label").forEach(label=>{
+    let val = parseInt(label.querySelector("input").value);
+    if(correct.includes(val)) label.classList.add("correct");
+    else if(selected.includes(val)) label.classList.add("wrong");
+
+    label.querySelector("input").disabled=true;
+  });
+
+  userAnswers.push({question:q,selected,isCorrect});
+
+  // 顯示下一題
+  document.getElementById("confirmBtn").style.display="none";
+  document.getElementById("nextBtn").style.display="inline-block";
+  document.getElementById("nextBtn").onclick=()=>{
+    currentIndex++;
+    if(currentIndex<shuffledQuestions.length) showQuestion();
+    else endQuiz();
+  };
 }
 
 // ======================= 點選答案立即評分 =======================
@@ -1359,8 +1348,6 @@ function restartQuiz(){
   document.getElementById("progress").style.display="none";
 }
 
-
 </script>
 </body>
 </html>
-
